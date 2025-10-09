@@ -1,0 +1,61 @@
+head	1.1;
+access;
+symbols;
+locks
+	scarol:1.1; strict;
+comment	@# @;
+
+
+1.1
+date	2025.10.09.17.17.53;	author scarol;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@#!/bin/sh
+# $Source$
+# $Date$
+# $Revision$
+# $State$
+
+case "$1" in
+    ""|"-h") echo "\nAdd page numbers to an existing PDF by overlaying"
+	     echo "another PDF page by page."
+	     echo "\nUsage:"
+	     echo '386-040... INPUFILE OVERLAYFILE|"default" [OUTPUTFILE]'
+	     echo 'if "default" is specified a default will be usedi as the overlay.'
+	     echo 'if the OUTPUTFILE is unspecified, "numbered.pdf" will be used.\n'
+	     exit
+esac
+
+echo "[green]Not help text" | rich -p -
+
+
+NUMBERSFILE="blank-numbered-20pp.pdf"
+OUTPUTFILE="numbered.pdf"
+
+echo "-----------------------------"
+echo "\$1 = $1, \$2 = $2, \$3 = $3"
+echo "-----------------------------"
+
+if [ "$2" != "default" ]; then
+	NUMBERSFILE="$2"
+fi
+
+if [ "$3" != "" ]; then
+	OUTPUTFILE="$3"
+fi
+
+pdftk "$1" multistamp "$NUMBERSFILE" output "$OUTPUTFILE"
+
+#end
+@
