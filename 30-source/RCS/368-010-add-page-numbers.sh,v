@@ -1,10 +1,15 @@
-head	1.1;
+head	1.2;
 access;
 symbols;
 locks
-	scarol:1.1; strict;
+	scarol:1.2; strict;
 comment	@# @;
 
+
+1.2
+date	2025.10.11.16.31.29;	author scarol;	state Exp;
+branches;
+next	1.1;
 
 1.1
 date	2025.10.09.17.17.53;	author scarol;	state Exp;
@@ -16,16 +21,16 @@ desc
 @@
 
 
-1.1
+1.2
 log
-@Initial revision
+@disabled in favor of 368-020
 @
 text
 @#!/bin/sh
-# $Source$
-# $Date$
-# $Revision$
-# $State$
+# $Source: /srv/368-pdf-utilities/30-source/RCS/368-010-add-page-numbers.sh,v $
+# $Date: 2025/10/09 17:17:53 $
+# $Revision: 1.1 $
+# $State: Exp $
 
 case "$1" in
     ""|"-h") echo "\nAdd page numbers to an existing PDF by overlaying"
@@ -34,11 +39,11 @@ case "$1" in
 	     echo '386-040... INPUFILE OVERLAYFILE|"default" [OUTPUTFILE]'
 	     echo 'if "default" is specified a default will be usedi as the overlay.'
 	     echo 'if the OUTPUTFILE is unspecified, "numbered.pdf" will be used.\n'
-	     exit
 esac
 
-echo "[green]Not help text" | rich -p -
+echo "\n[red]-----------------------------------\nAs of 20251011 use 368-020 instead.\n-----------------------------------\n" | rich -p -
 
+exit
 
 NUMBERSFILE="blank-numbered-20pp.pdf"
 OUTPUTFILE="numbered.pdf"
@@ -58,4 +63,24 @@ fi
 pdftk "$1" multistamp "$NUMBERSFILE" output "$OUTPUTFILE"
 
 #end
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d2 4
+a5 4
+# $Source$
+# $Date$
+# $Revision$
+# $State$
+a13 1
+	     exit
+d16 1
+a16 1
+echo "[green]Not help text" | rich -p -
+d18 1
 @

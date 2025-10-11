@@ -1,7 +1,7 @@
 #!/bin/sh
 # $Source: /srv/368-pdf-utilities/30-source/RCS/368-010-add-page-numbers.sh,v $
-# $Date: 2025/10/09 17:17:53 $
-# $Revision: 1.1 $
+# $Date: 2025/10/11 16:31:29 $
+# $Revision: 1.2 $
 # $State: Exp $
 
 case "$1" in
@@ -11,11 +11,11 @@ case "$1" in
 	     echo '386-040... INPUFILE OVERLAYFILE|"default" [OUTPUTFILE]'
 	     echo 'if "default" is specified a default will be usedi as the overlay.'
 	     echo 'if the OUTPUTFILE is unspecified, "numbered.pdf" will be used.\n'
-	     exit
 esac
 
-echo "[green]Not help text" | rich -p -
+echo "\n[red]-----------------------------------\nAs of 20251011 use 368-020 instead.\n-----------------------------------\n" | rich -p -
 
+exit
 
 NUMBERSFILE="blank-numbered-20pp.pdf"
 OUTPUTFILE="numbered.pdf"

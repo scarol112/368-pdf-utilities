@@ -1,0 +1,40 @@
+head	1.1;
+access;
+symbols;
+locks
+	scarol:1.1; strict;
+comment	@# @;
+
+
+1.1
+date	2025.10.11.17.41.17;	author scarol;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@!#/bin/sh
+# $Source$
+# $Date$
+# $Revision$
+# $State$
+
+# Driver for 368-020, providing the number of pages by inspecting the input file
+# Usage 368-021-driver-for-368-020 input-file outputfile
+
+
+INPUT="$1"
+OUTPUT="$2"
+NUMPAGES=$(pdfinfo $INPUT |awk '/Pages:/{print $2}')
+
+sh ./368-020-add-page-numbers-to-PDF.sh -i $INPUT -n $NUMPAGES -o $OUTPUT
+
+@
