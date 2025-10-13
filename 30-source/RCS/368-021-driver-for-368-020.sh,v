@@ -1,10 +1,15 @@
-head	1.1;
+head	1.2;
 access;
 symbols;
 locks
-	scarol:1.1; strict;
+	scarol:1.2; strict;
 comment	@# @;
 
+
+1.2
+date	2025.10.13.12.39.25;	author scarol;	state Exp;
+branches;
+next	1.1;
 
 1.1
 date	2025.10.11.17.41.17;	author scarol;	state Exp;
@@ -16,19 +21,20 @@ desc
 @@
 
 
-1.1
+1.2
 log
-@Initial revision
+@minor edits
 @
 text
-@!#/bin/sh
-# $Source$
-# $Date$
-# $Revision$
-# $State$
+@#!/bin/sh
+# $Source: /srv/368-pdf-utilities/30-source/RCS/368-021-driver-for-368-020.sh,v $
+# $Date: 2025/10/11 17:41:17 $
+# $Revision: 1.1 $
+# $State: Exp $
 
 # Driver for 368-020, providing the number of pages by inspecting the input file
-# Usage 368-021-driver-for-368-020 input-file outputfile
+
+echo "Usage: 368-021-driver-for-368-020 INFILE OUTFILE"
 
 
 INPUT="$1"
@@ -37,4 +43,22 @@ NUMPAGES=$(pdfinfo $INPUT |awk '/Pages:/{print $2}')
 
 sh ./368-020-add-page-numbers-to-PDF.sh -i $INPUT -n $NUMPAGES -o $OUTPUT
 
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d1 5
+a5 5
+!#/bin/sh
+# $Source$
+# $Date$
+# $Revision$
+# $State$
+d8 2
+a9 1
+# Usage 368-021-driver-for-368-020 input-file outputfile
 @

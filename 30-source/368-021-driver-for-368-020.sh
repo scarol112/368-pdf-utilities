@@ -1,11 +1,12 @@
-!#/bin/sh
+#!/bin/sh
 # $Source: /srv/368-pdf-utilities/30-source/RCS/368-021-driver-for-368-020.sh,v $
-# $Date: 2025/10/11 17:41:17 $
-# $Revision: 1.1 $
+# $Date: 2025/10/13 12:39:25 $
+# $Revision: 1.2 $
 # $State: Exp $
 
 # Driver for 368-020, providing the number of pages by inspecting the input file
-# Usage 368-021-driver-for-368-020 input-file outputfile
+
+echo "Usage: 368-021-driver-for-368-020 INFILE OUTFILE"
 
 
 INPUT="$1"
