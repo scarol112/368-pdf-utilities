@@ -1,8 +1,10 @@
 #!/bin/sh
 # $Source: /srv/368-pdf-utilities/30-source/RCS/368-010-add-page-numbers.sh,v $
-# $Date: 2025/10/11 16:31:29 $
-# $Revision: 1.2 $
+# $Date: 2025/12/06 04:48:58 $
+# $Revision: 1.3 $
 # $State: Exp $
+
+#tag overlay pdf on pdf using pdftk
 
 case "$1" in
     ""|"-h") echo "\nAdd page numbers to an existing PDF by overlaying"

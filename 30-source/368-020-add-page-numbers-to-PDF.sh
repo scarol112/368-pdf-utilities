@@ -1,8 +1,10 @@
 #!/bin/sh
 # $Source: /srv/368-pdf-utilities/30-source/RCS/368-020-add-page-numbers-to-PDF.sh,v $
-# $Date: 2025/10/11 18:16:23 $
-# $Revision: 1.3 $
+# $Date: 2025/12/06 04:48:58 $
+# $Revision: 1.4 $
 # $State: Exp $
+
+#tag Number a pdf file - driver is 368-021
 
 # original created by Anthopic Claude 20251010
 

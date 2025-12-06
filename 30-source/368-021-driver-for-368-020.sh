@@ -1,8 +1,10 @@
 #!/bin/sh
 # $Source: /srv/368-pdf-utilities/30-source/RCS/368-021-driver-for-368-020.sh,v $
-# $Date: 2025/10/25 18:32:44 $
-# $Revision: 1.3 $
+# $Date: 2025/12/06 04:48:58 $
+# $Revision: 1.4 $
 # $State: Exp $
+
+#tag Number a PDF file - DRIVER for 368-020
 
 # Driver for 368-020, providing the number of pages by inspecting the input file
 
