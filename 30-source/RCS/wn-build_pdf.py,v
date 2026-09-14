@@ -1,10 +1,15 @@
-head	1.2;
+head	1.3;
 access;
 symbols;
 locks
-	scarol:1.2; strict;
+	scarol:1.3; strict;
 comment	@# @;
 
+
+1.3
+date	2026.09.14.14.26.18;	author scarol;	state Exp;
+branches;
+next	1.2;
 
 1.2
 date	2026.09.14.14.02.23;	author scarol;	state Exp;
@@ -21,9 +26,9 @@ desc
 @@
 
 
-1.2
+1.3
 log
-@issue #2: timestamp output PDF filenames (YYYYMMDD-HHMMSS)
+@issue #3: add --from/--to substring filters to wn-build_pdf.py, wire through wn-rerender.sh
 @
 text
 @#!/usr/bin/env python3
@@ -37,6 +42,12 @@ Usage:
 With no --out, the PDF is written alongside the input JSON, named with the
 current date and time (YYYYMMDD-HHMMSS.pdf) so repeated runs don't clobber
 each other.
+
+--from TEXT / --to TEXT trim miscellania (nav, ads, "related articles",
+etc.) that got scraped along with the real article. Output starts at the
+beginning of the --from text and stops just before the --to text; either
+can be omitted to leave that end untrimmed. Both match as a plain substring
+against the scraped block text (see output/article.json).
 """
 
 import argparse
@@ -172,14 +183,66 @@ def render_html(article):
 """
 
 
+def filter_blocks(blocks, from_text, to_text):
+    """Trim blocks to the range [from_text, to_text), matched as substrings
+    against block text, in document order. Either bound may be omitted."""
+    if not from_text and not to_text:
+        return blocks
+
+    start_i, start_pos = 0, 0
+    if from_text:
+        for i, b in enumerate(blocks):
+            pos = b["text"].find(from_text)
+            if pos != -1:
+                start_i, start_pos = i, pos
+                break
+        else:
+            sys.exit(f"--from text {from_text!r} not found in any block of {len(blocks)}.")
+
+    end_i, end_pos = len(blocks) - 1, None
+    if to_text:
+        for i in range(start_i, len(blocks)):
+            search_from = start_pos if i == start_i else 0
+            pos = blocks[i]["text"].find(to_text, search_from)
+            if pos != -1:
+                end_i, end_pos = i, pos
+                break
+        else:
+            print(
+                f"Warning: --to text {to_text!r} not found after --from -- "
+                "keeping output through the end.",
+                file=sys.stderr,
+            )
+
+    result = []
+    for i in range(start_i, end_i + 1):
+        text = blocks[i]["text"]
+        if i == start_i and from_text:
+            text = text[start_pos:]
+        if end_pos is not None and i == end_i:
+            cut = end_pos - start_pos if i == start_i and from_text else end_pos
+            text = text[:cut]
+        if text.strip():
+            result.append({**blocks[i], "text": text})
+    return result
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("article_json")
     ap.add_argument("--out", default=None, help="Output PDF path (default: <dir of input>/YYYYMMDD-HHMMSS.pdf)")
+    ap.add_argument("--from", dest="from_text", default=None, metavar="TEXT",
+                     help="Start output at the beginning of this text (substring match)")
+    ap.add_argument("--to", dest="to_text", default=None, metavar="TEXT",
+                     help="Stop output just before this text (substring match)")
     args = ap.parse_args()
 
     with open(args.article_json, encoding="utf-8") as f:
         article = json.load(f)
+
+    article["blocks"] = filter_blocks(article["blocks"], args.from_text, args.to_text)
+    if not article["blocks"]:
+        sys.exit("--from/--to left no content to render.")
 
     if args.out:
         out_pdf = args.out
@@ -216,6 +279,18 @@ def main():
 
 if __name__ == "__main__":
     main()
+@
+
+
+1.2
+log
+@issue #2: timestamp output PDF filenames (YYYYMMDD-HHMMSS)
+@
+text
+@d12 6
+d153 44
+d201 4
+d209 4
 @
 
 

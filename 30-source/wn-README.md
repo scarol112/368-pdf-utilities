@@ -241,6 +241,24 @@ will throw a `json.decoder.JSONDecodeError`) in this shape:
 (rendered italic with a left rule) — anything else falls through to a plain
 paragraph.
 
+## Filtering out miscellania with `--from` / `--to`
+
+Scraped pages often drag in nav links, ads, or a "Related Articles" footer
+alongside the real article text. Rather than hand-editing `article.json` to
+delete those blocks, `wn-build_pdf.py` (and `wn-rerender.sh`, which passes
+extra flags straight through to it) accept `--from TEXT` and `--to TEXT`:
+
+```bash
+./wn-rerender.sh output/article.json --from "Once upon a time" --to "Related Articles"
+```
+
+Output starts at the beginning of the `--from` text and stops just before
+the `--to` text; both match as a plain substring against the scraped block
+text, and either can be omitted to leave that end untrimmed. If `--from`
+isn't found the run fails with an error (nothing to render); if `--to`
+isn't found it prints a warning and keeps everything through the end
+instead of silently dropping the rest of the article.
+
 ## Files
 
 | File               | Purpose                                             |

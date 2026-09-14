@@ -1,10 +1,20 @@
-head	1.2;
+head	1.4;
 access;
 symbols;
 locks
-	scarol:1.2; strict;
+	scarol:1.4; strict;
 comment	@# @;
 
+
+1.4
+date	2026.09.14.16.41.33;	author scarol;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2026.09.14.16.37.43;	author scarol;	state Exp;
+branches;
+next	1.2;
 
 1.2
 date	2026.09.14.14.02.23;	author scarol;	state Exp;
@@ -21,9 +31,9 @@ desc
 @@
 
 
-1.2
+1.4
 log
-@issue #2: timestamp output PDF filenames (YYYYMMDD-HHMMSS)
+@fix: also route --from=VALUE/--to=VALUE (equals-sign form) to wn-build_pdf.py
 @
 text
 @#!/usr/bin/env bash
@@ -34,6 +44,11 @@ text
 #   ./wn-newspaper.sh                          # only tab open, or prompts you to pick
 #   ./wn-newspaper.sh --url-contains nytimes.com
 #   ./wn-newspaper.sh --tab-index 2
+#   ./wn-newspaper.sh --from "Once upon a time" --to "Related Articles"
+#                                              # trim miscellania -- see wn-build_pdf.py --help
+#
+# --tab-index/--url-contains/--port/--list go to wn-scrape.py; --from/--to
+# go to wn-build_pdf.py; any of these can be combined in one call.
 #
 # Output goes to output/article.json (each run overwrites it -- rename/move
 # it first if you want to keep a copy) and output/YYYYMMDD-HHMMSS.pdf (each
@@ -43,6 +58,47 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
+SCRAPE_ARGS=()
+BUILD_ARGS=()
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --from|--to)
+      BUILD_ARGS+=("$1" "$2")
+      shift 2
+      ;;
+    --from=*|--to=*)
+      BUILD_ARGS+=("$1")
+      shift
+      ;;
+    *)
+      SCRAPE_ARGS+=("$1")
+      shift
+      ;;
+  esac
+done
+
+./.venv/bin/python wn-scrape.py --out output/article.json "${SCRAPE_ARGS[@@]}"
+./.venv/bin/python wn-build_pdf.py output/article.json "${BUILD_ARGS[@@]}"
+@
+
+
+1.3
+log
+@fix: route --from/--to to wn-build_pdf.py instead of forwarding them to wn-scrape.py
+@
+text
+@d31 4
+@
+
+
+1.2
+log
+@issue #2: timestamp output PDF filenames (YYYYMMDD-HHMMSS)
+@
+text
+@d9 5
+d23 17
+a39 2
 ./.venv/bin/python wn-scrape.py --out output/article.json "$@@"
 ./.venv/bin/python wn-build_pdf.py output/article.json
 @

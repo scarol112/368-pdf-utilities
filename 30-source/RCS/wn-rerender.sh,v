@@ -1,10 +1,15 @@
-head	1.2;
+head	1.3;
 access;
 symbols;
 locks
-	scarol:1.2; strict;
+	scarol:1.3; strict;
 comment	@# @;
 
+
+1.3
+date	2026.09.14.14.26.18;	author scarol;	state Exp;
+branches;
+next	1.2;
 
 1.2
 date	2026.09.14.14.02.23;	author scarol;	state Exp;
@@ -21,9 +26,9 @@ desc
 @@
 
 
-1.2
+1.3
 log
-@issue #2: timestamp output PDF filenames (YYYYMMDD-HHMMSS)
+@issue #3: add --from/--to substring filters to wn-build_pdf.py, wire through wn-rerender.sh
 @
 text
 @#!/usr/bin/env bash
@@ -35,19 +40,45 @@ text
 #   ./wn-rerender.sh                          # output/article.json -> output/YYYYMMDD-HHMMSS.pdf
 #   ./wn-rerender.sh output/mine.json         # output/mine.json -> output/YYYYMMDD-HHMMSS.pdf
 #   ./wn-rerender.sh output/mine.json output/mine.pdf   # explicit output path skips the timestamp
+#   ./wn-rerender.sh output/mine.json --from "Once upon a time" --to "Related Articles"
+#                                              # trim miscellania -- see wn-build_pdf.py --help
 
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
 IN="${1:-output/article.json}"
-OUT="${2:-}"
+[ "$#" -gt 0 ] && shift
 
+# A second positional (not starting with "-") is the legacy explicit OUT
+# path; anything else (--from, --to, --out, ...) passes straight through
+# to wn-build_pdf.py.
+if [ "$#" -gt 0 ] && [[ "$1" != -* ]]; then
+  OUT="$1"
+  shift
+  ./.venv/bin/python wn-build_pdf.py "$IN" --out "$OUT" "$@@"
+else
+  ./.venv/bin/python wn-build_pdf.py "$IN" "$@@"
+fi
+@
+
+
+1.2
+log
+@issue #2: timestamp output PDF filenames (YYYYMMDD-HHMMSS)
+@
+text
+@d10 2
+d18 1
+a18 1
+OUT="${2:-}"
+d20 7
+a26 2
 if [ -n "$OUT" ]; then
   ./.venv/bin/python wn-build_pdf.py "$IN" --out "$OUT"
-else
+d28 1
+a28 1
   ./.venv/bin/python wn-build_pdf.py "$IN"
-fi
 @
 
 
