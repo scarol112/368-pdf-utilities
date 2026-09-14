@@ -79,10 +79,24 @@ def pick_tab(tabs, args):
     if len(pages) == 1:
         return pages[0]
 
-    sys.exit(
-        "Multiple tabs open -- pass --tab-index or --url-contains to pick one.\n"
-        + "\n".join(f"  [{i}] {t.get('title', '')} -- {t.get('url', '')}" for i, t in enumerate(pages))
-    )
+    print("Multiple tabs open -- which one do you want to render?")
+    for i, t in enumerate(pages):
+        print(f"  [{i}] {t.get('title', '')} -- {t.get('url', '')}")
+
+    if not sys.stdin.isatty():
+        sys.exit(
+            "Not running interactively -- pass --tab-index or --url-contains to pick one."
+        )
+
+    while True:
+        try:
+            choice = input(f"Tab number [0-{len(pages) - 1}]: ").strip()
+        except (EOFError, KeyboardInterrupt):
+            sys.exit("\nAborted.")
+        if not choice.isdigit() or not (0 <= int(choice) < len(pages)):
+            print(f"Enter a number between 0 and {len(pages) - 1}.")
+            continue
+        return pages[int(choice)]
 
 
 def evaluate(ws_url, expression, timeout=15):

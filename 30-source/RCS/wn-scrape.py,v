@@ -1,10 +1,15 @@
-head	1.1;
+head	1.2;
 access;
 symbols;
 locks
-	scarol:1.1; strict;
+	scarol:1.2; strict;
 comment	@# @;
 
+
+1.2
+date	2026.09.14.13.22.42;	author scarol;	state Exp;
+branches;
+next	1.1;
 
 1.1
 date	2026.09.14.12.20.28;	author scarol;	state Exp;
@@ -16,9 +21,9 @@ desc
 @@
 
 
-1.1
+1.2
 log
-@Initial revision
+@issue #1: prompt for tab choice when multiple tabs are open
 @
 text
 @#!/usr/bin/env python3
@@ -102,10 +107,24 @@ def pick_tab(tabs, args):
     if len(pages) == 1:
         return pages[0]
 
-    sys.exit(
-        "Multiple tabs open -- pass --tab-index or --url-contains to pick one.\n"
-        + "\n".join(f"  [{i}] {t.get('title', '')} -- {t.get('url', '')}" for i, t in enumerate(pages))
-    )
+    print("Multiple tabs open -- which one do you want to render?")
+    for i, t in enumerate(pages):
+        print(f"  [{i}] {t.get('title', '')} -- {t.get('url', '')}")
+
+    if not sys.stdin.isatty():
+        sys.exit(
+            "Not running interactively -- pass --tab-index or --url-contains to pick one."
+        )
+
+    while True:
+        try:
+            choice = input(f"Tab number [0-{len(pages) - 1}]: ").strip()
+        except (EOFError, KeyboardInterrupt):
+            sys.exit("\nAborted.")
+        if not choice.isdigit() or not (0 <= int(choice) < len(pages)):
+            print(f"Enter a number between 0 and {len(pages) - 1}.")
+            continue
+        return pages[int(choice)]
 
 
 def evaluate(ws_url, expression, timeout=15):
@@ -170,4 +189,18 @@ def main():
 
 if __name__ == "__main__":
     main()
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d82 18
+a99 4
+    sys.exit(
+        "Multiple tabs open -- pass --tab-index or --url-contains to pick one.\n"
+        + "\n".join(f"  [{i}] {t.get('title', '')} -- {t.get('url', '')}" for i, t in enumerate(pages))
+    )
 @
