@@ -5,6 +5,10 @@ newspaper-style, 3-column, 9pt, letter-size PDF using headless Chrome.
 
 Usage:
   .venv/bin/python wn-build_pdf.py output/article.json --out output/article.pdf
+
+With no --out, the PDF is written alongside the input JSON, named with the
+current date and time (YYYYMMDD-HHMMSS.pdf) so repeated runs don't clobber
+each other.
 """
 
 import argparse
@@ -14,6 +18,7 @@ import os
 import subprocess
 import sys
 import tempfile
+from datetime import datetime
 
 
 def esc(s):
@@ -142,13 +147,17 @@ def render_html(article):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("article_json")
-    ap.add_argument("--out", default=None, help="Output PDF path (default: same name as input, .pdf)")
+    ap.add_argument("--out", default=None, help="Output PDF path (default: <dir of input>/YYYYMMDD-HHMMSS.pdf)")
     args = ap.parse_args()
 
     with open(args.article_json, encoding="utf-8") as f:
         article = json.load(f)
 
-    out_pdf = args.out or os.path.splitext(args.article_json)[0] + ".pdf"
+    if args.out:
+        out_pdf = args.out
+    else:
+        stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        out_pdf = os.path.join(os.path.dirname(args.article_json) or ".", f"{stamp}.pdf")
     os.makedirs(os.path.dirname(out_pdf) or ".", exist_ok=True)
 
     doc = render_html(article)

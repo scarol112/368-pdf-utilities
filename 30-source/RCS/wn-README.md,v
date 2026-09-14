@@ -1,10 +1,15 @@
-head	1.2;
+head	1.3;
 access;
 symbols;
 locks
-	scarol:1.2; strict;
+	scarol:1.3; strict;
 comment	@# @;
 
+
+1.3
+date	2026.09.14.14.02.23;	author scarol;	state Exp;
+branches;
+next	1.2;
 
 1.2
 date	2026.09.14.12.32.19;	author scarol;	state Exp;
@@ -21,9 +26,9 @@ desc
 @@
 
 
-1.2
+1.3
 log
-@add context notes for future Claude sessions
+@issue #2: timestamp output PDF filenames (YYYYMMDD-HHMMSS)
 @
 text
 @# wn- : web-to-newspaper
@@ -127,7 +132,8 @@ Three pieces:
    styled as a 3-column, 9pt, justified, letter-size newspaper layout
    (drop-cap lead, masthead, byline row, column rules, hyphenation), then
    shells out to headless Chrome's `--print-to-pdf` to produce
-   `output/article.pdf`.
+   `output/YYYYMMDD-HHMMSS.pdf` (timestamped so repeated runs don't clobber
+   each other).
 
 `wn-newspaper.sh` just chains steps 2 and 3. `wn-rerender.sh` re-runs just step 3
 (useful after hand-editing `output/article.json` — see below).
@@ -212,9 +218,10 @@ If more than one tab is open, point it at the right one:
 ```
 
 Output lands at `output/article.json` (the extracted text — handy to
-sanity-check before/without rendering) and `output/article.pdf` (the final
-newspaper layout). Each run overwrites those two files — rename/move them
-first if you want to keep a copy.
+sanity-check before/without rendering, overwritten each run — rename/move it
+first if you want to keep a copy) and `output/YYYYMMDD-HHMMSS.pdf` (the final
+newspaper layout, timestamped so successive runs never clobber each other's
+PDF).
 
 **4. When done, close the Chrome window** (or `Ctrl+C` the
 `wn-launch_chrome.sh` terminal). Its profile directory (`chrome-profile/`,
@@ -240,9 +247,9 @@ edited, **don't rerun `wn-newspaper.sh`** — it always re-scrapes first and wil
 overwrite your edits. Instead, re-render just the PDF:
 
 ```bash
-./wn-rerender.sh                          # output/article.json -> output/article.pdf
-./wn-rerender.sh output/mine.json         # a differently-named article -> output/mine.pdf
-./wn-rerender.sh output/mine.json output/mine.pdf   # explicit output path too
+./wn-rerender.sh                          # output/article.json -> output/YYYYMMDD-HHMMSS.pdf
+./wn-rerender.sh output/mine.json         # a differently-named article -> output/YYYYMMDD-HHMMSS.pdf
+./wn-rerender.sh output/mine.json output/mine.pdf   # explicit output path skips the timestamp
 ```
 
 `wn-rerender.sh` never touches Chrome or the network — it only reads the JSON
@@ -279,6 +286,27 @@ paragraph.
 | `wn-requirements.txt` | Pip deps for `.venv/` (just `websocket-client`)      |
 | `chrome-profile/`  | Created on first `wn-launch_chrome.sh` run; holds cookies/session for that dedicated browser instance — not your everyday Chrome profile. **Gitignored.** |
 | `output/`          | Scraped JSON + generated PDFs land here. **Contents gitignored** — often someone else's copyrighted text. |
+@
+
+
+1.2
+log
+@add context notes for future Claude sessions
+@
+text
+@d102 2
+a103 1
+   `output/article.pdf`.
+d188 4
+a191 3
+sanity-check before/without rendering) and `output/article.pdf` (the final
+newspaper layout). Each run overwrites those two files — rename/move them
+first if you want to keep a copy.
+d217 3
+a219 3
+./wn-rerender.sh                          # output/article.json -> output/article.pdf
+./wn-rerender.sh output/mine.json         # a differently-named article -> output/mine.pdf
+./wn-rerender.sh output/mine.json output/mine.pdf   # explicit output path too
 @
 
 

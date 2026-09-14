@@ -1,10 +1,15 @@
-head	1.1;
+head	1.2;
 access;
 symbols;
 locks
-	scarol:1.1; strict;
+	scarol:1.2; strict;
 comment	@# @;
 
+
+1.2
+date	2026.09.14.14.02.23;	author scarol;	state Exp;
+branches;
+next	1.1;
 
 1.1
 date	2026.09.14.12.20.28;	author scarol;	state Exp;
@@ -16,9 +21,9 @@ desc
 @@
 
 
-1.1
+1.2
 log
-@Initial revision
+@issue #2: timestamp output PDF filenames (YYYYMMDD-HHMMSS)
 @
 text
 @#!/usr/bin/env bash
@@ -30,14 +35,30 @@ text
 #   ./wn-newspaper.sh --url-contains nytimes.com
 #   ./wn-newspaper.sh --tab-index 2
 #
-# Output goes to output/article.json and output/article.pdf (timestamped
-# copies are not made -- rename/move output/article.pdf if you want to
-# keep it before running again).
+# Output goes to output/article.json (each run overwrites it -- rename/move
+# it first if you want to keep a copy) and output/YYYYMMDD-HHMMSS.pdf (each
+# run gets its own timestamped filename, so PDFs never clobber each other).
 
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
 ./.venv/bin/python wn-scrape.py --out output/article.json "$@@"
+./.venv/bin/python wn-build_pdf.py output/article.json
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d10 3
+a12 3
+# Output goes to output/article.json and output/article.pdf (timestamped
+# copies are not made -- rename/move output/article.pdf if you want to
+# keep it before running again).
+d19 1
+a19 1
 ./.venv/bin/python wn-build_pdf.py output/article.json --out output/article.pdf
 @

@@ -99,7 +99,8 @@ Three pieces:
    styled as a 3-column, 9pt, justified, letter-size newspaper layout
    (drop-cap lead, masthead, byline row, column rules, hyphenation), then
    shells out to headless Chrome's `--print-to-pdf` to produce
-   `output/article.pdf`.
+   `output/YYYYMMDD-HHMMSS.pdf` (timestamped so repeated runs don't clobber
+   each other).
 
 `wn-newspaper.sh` just chains steps 2 and 3. `wn-rerender.sh` re-runs just step 3
 (useful after hand-editing `output/article.json` — see below).
@@ -184,9 +185,10 @@ If more than one tab is open, point it at the right one:
 ```
 
 Output lands at `output/article.json` (the extracted text — handy to
-sanity-check before/without rendering) and `output/article.pdf` (the final
-newspaper layout). Each run overwrites those two files — rename/move them
-first if you want to keep a copy.
+sanity-check before/without rendering, overwritten each run — rename/move it
+first if you want to keep a copy) and `output/YYYYMMDD-HHMMSS.pdf` (the final
+newspaper layout, timestamped so successive runs never clobber each other's
+PDF).
 
 **4. When done, close the Chrome window** (or `Ctrl+C` the
 `wn-launch_chrome.sh` terminal). Its profile directory (`chrome-profile/`,
@@ -212,9 +214,9 @@ edited, **don't rerun `wn-newspaper.sh`** — it always re-scrapes first and wil
 overwrite your edits. Instead, re-render just the PDF:
 
 ```bash
-./wn-rerender.sh                          # output/article.json -> output/article.pdf
-./wn-rerender.sh output/mine.json         # a differently-named article -> output/mine.pdf
-./wn-rerender.sh output/mine.json output/mine.pdf   # explicit output path too
+./wn-rerender.sh                          # output/article.json -> output/YYYYMMDD-HHMMSS.pdf
+./wn-rerender.sh output/mine.json         # a differently-named article -> output/YYYYMMDD-HHMMSS.pdf
+./wn-rerender.sh output/mine.json output/mine.pdf   # explicit output path skips the timestamp
 ```
 
 `wn-rerender.sh` never touches Chrome or the network — it only reads the JSON

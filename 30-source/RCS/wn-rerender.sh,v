@@ -1,10 +1,15 @@
-head	1.1;
+head	1.2;
 access;
 symbols;
 locks
-	scarol:1.1; strict;
+	scarol:1.2; strict;
 comment	@# @;
 
+
+1.2
+date	2026.09.14.14.02.23;	author scarol;	state Exp;
+branches;
+next	1.1;
 
 1.1
 date	2026.09.14.12.20.28;	author scarol;	state Exp;
@@ -16,9 +21,9 @@ desc
 @@
 
 
-1.1
+1.2
 log
-@Initial revision
+@issue #2: timestamp output PDF filenames (YYYYMMDD-HHMMSS)
 @
 text
 @#!/usr/bin/env bash
@@ -27,9 +32,9 @@ text
 # article JSON you point it at).
 #
 # Usage:
-#   ./wn-rerender.sh                          # output/article.json -> output/article.pdf
-#   ./wn-rerender.sh output/mine.json         # output/mine.json -> output/mine.pdf
-#   ./wn-rerender.sh output/mine.json output/mine.pdf
+#   ./wn-rerender.sh                          # output/article.json -> output/YYYYMMDD-HHMMSS.pdf
+#   ./wn-rerender.sh output/mine.json         # output/mine.json -> output/YYYYMMDD-HHMMSS.pdf
+#   ./wn-rerender.sh output/mine.json output/mine.pdf   # explicit output path skips the timestamp
 
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -43,4 +48,17 @@ if [ -n "$OUT" ]; then
 else
   ./.venv/bin/python wn-build_pdf.py "$IN"
 fi
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d7 3
+a9 3
+#   ./wn-rerender.sh                          # output/article.json -> output/article.pdf
+#   ./wn-rerender.sh output/mine.json         # output/mine.json -> output/mine.pdf
+#   ./wn-rerender.sh output/mine.json output/mine.pdf
 @

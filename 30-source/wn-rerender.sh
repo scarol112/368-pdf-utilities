@@ -4,9 +4,9 @@
 # article JSON you point it at).
 #
 # Usage:
-#   ./wn-rerender.sh                          # output/article.json -> output/article.pdf
-#   ./wn-rerender.sh output/mine.json         # output/mine.json -> output/mine.pdf
-#   ./wn-rerender.sh output/mine.json output/mine.pdf
+#   ./wn-rerender.sh                          # output/article.json -> output/YYYYMMDD-HHMMSS.pdf
+#   ./wn-rerender.sh output/mine.json         # output/mine.json -> output/YYYYMMDD-HHMMSS.pdf
+#   ./wn-rerender.sh output/mine.json output/mine.pdf   # explicit output path skips the timestamp
 
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

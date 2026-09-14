@@ -7,13 +7,13 @@
 #   ./wn-newspaper.sh --url-contains nytimes.com
 #   ./wn-newspaper.sh --tab-index 2
 #
-# Output goes to output/article.json and output/article.pdf (timestamped
-# copies are not made -- rename/move output/article.pdf if you want to
-# keep it before running again).
+# Output goes to output/article.json (each run overwrites it -- rename/move
+# it first if you want to keep a copy) and output/YYYYMMDD-HHMMSS.pdf (each
+# run gets its own timestamped filename, so PDFs never clobber each other).
 
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
 ./.venv/bin/python wn-scrape.py --out output/article.json "$@"
-./.venv/bin/python wn-build_pdf.py output/article.json --out output/article.pdf
+./.venv/bin/python wn-build_pdf.py output/article.json
