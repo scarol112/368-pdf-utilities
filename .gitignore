@@ -1,0 +1,6 @@
+# wn- (web-to-newspaper) feature: local venv, live browser session data,
+# and scraped output should never be committed.
+30-source/.venv/
+30-source/chrome-profile/
+30-source/output/*
+!30-source/output/.gitkeep

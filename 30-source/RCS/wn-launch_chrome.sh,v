@@ -1,0 +1,55 @@
+head	1.1;
+access;
+symbols;
+locks
+	scarol:1.1; strict;
+comment	@# @;
+
+
+1.1
+date	2026.09.14.12.20.28;	author scarol;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@#!/usr/bin/env bash
+# Launches a dedicated, visible Chrome instance with the DevTools Protocol
+# (CDP) exposed on a local port, using its own profile directory so it is
+# completely separate from your normal Chrome profile/session.
+#
+# Usage:
+#   ./wn-launch_chrome.sh [port]
+#
+# Then in that window: log into whatever site you want to scrape, and
+# navigate to the page you want. Leave the window open. Run wn-scrape.py
+# from a second terminal while this keeps running.
+
+set -euo pipefail
+
+PORT="${1:-9222}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROFILE_DIR="$SCRIPT_DIR/chrome-profile"
+
+mkdir -p "$PROFILE_DIR"
+
+echo "Starting Chrome with CDP on port $PORT, profile at $PROFILE_DIR"
+echo "Log into your site in the window that opens, then leave it open."
+echo "Press Ctrl+C here to close Chrome when you're done."
+
+exec google-chrome \
+  --remote-debugging-port="$PORT" \
+  --remote-allow-origins="*" \
+  --user-data-dir="$PROFILE_DIR" \
+  --no-first-run \
+  --no-default-browser-check \
+  "about:blank"
+@

@@ -1,0 +1,205 @@
+head	1.1;
+access;
+symbols;
+locks
+	scarol:1.1; strict;
+comment	@# @;
+
+
+1.1
+date	2026.09.14.12.20.28;	author scarol;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@#!/usr/bin/env python3
+"""
+Renders an article JSON file (as produced by wn-scrape.py) into a
+newspaper-style, 3-column, 9pt, letter-size PDF using headless Chrome.
+
+Usage:
+  .venv/bin/python wn-build_pdf.py output/article.json --out output/article.pdf
+"""
+
+import argparse
+import html
+import json
+import os
+import subprocess
+import sys
+import tempfile
+
+
+def esc(s):
+    return html.escape(s or "", quote=False)
+
+
+def render_html(article):
+    title = article.get("title") or "Untitled"
+    byline = article.get("byline") or ""
+    dateline = article.get("dateline") or ""
+    url = article.get("url") or ""
+
+    body_parts = []
+    for b in article["blocks"]:
+        tag = b.get("tag", "p")
+        text = esc(b.get("text", ""))
+        if not text:
+            continue
+        if tag in ("h2", "h3"):
+            body_parts.append(f'<p class="subhead">{text}</p>')
+        elif tag == "blockquote":
+            body_parts.append(f'<p class="quote">{text}</p>')
+        else:
+            body_parts.append(f"<p>{text}</p>")
+    body_html = "\n".join(body_parts)
+
+    byline_row = ""
+    if byline or dateline:
+        byline_row = f"""
+  <div class="byline-row">
+    <span>{esc(byline)}</span>
+    <span>{esc(dateline)}</span>
+  </div>"""
+
+    return f"""<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>{esc(title)}</title>
+<style>
+  @@page {{ size: letter; margin: 0.5in 0.45in 0.6in 0.45in; }}
+  * {{ box-sizing: border-box; }}
+  body {{
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 9pt;
+    line-height: 1.32;
+    color: #111;
+    margin: 0;
+  }}
+  .masthead {{
+    text-align: center;
+    border-bottom: 3px double #111;
+    padding-bottom: 4pt;
+    margin-bottom: 6pt;
+  }}
+  .masthead .kicker {{
+    font-family: 'Franklin Gothic Medium', Arial, sans-serif;
+    font-size: 7pt;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #555;
+    margin-bottom: 3pt;
+  }}
+  .masthead h1 {{
+    font-size: 20pt;
+    line-height: 1.15;
+    margin: 0;
+    font-weight: 700;
+  }}
+  .byline-row {{
+    display: flex;
+    justify-content: space-between;
+    font-family: Arial, sans-serif;
+    font-size: 7.5pt;
+    color: #444;
+    border-top: 1px solid #999;
+    border-bottom: 1px solid #999;
+    padding: 2pt 0;
+    margin-bottom: 8pt;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }}
+  .columns {{
+    column-count: 3;
+    column-gap: 0.28in;
+    column-rule: 1px solid #ccc;
+    text-align: justify;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+  }}
+  p {{ margin: 0 0 6pt 0; text-indent: 10pt; }}
+  p:first-of-type {{ text-indent: 0; }}
+  p:first-of-type::first-letter {{
+    font-size: 2.6em;
+    font-weight: 700;
+    float: left;
+    line-height: 0.85;
+    padding-right: 3pt;
+    padding-top: 2pt;
+  }}
+  .subhead {{ font-weight: 700; text-indent: 0; margin-top: 4pt; }}
+  .quote {{ font-style: italic; padding-left: 6pt; border-left: 2px solid #999; }}
+  .source {{
+    font-family: Arial, sans-serif;
+    font-size: 6.5pt;
+    color: #888;
+    text-align: center;
+    margin-top: 10pt;
+  }}
+</style>
+</head>
+<body>
+  <div class="masthead">
+    <div class="kicker">Web Clipping</div>
+    <h1>{esc(title)}</h1>
+  </div>{byline_row}
+  <div class="columns">
+{body_html}
+  </div>
+  <div class="source">{esc(url)}</div>
+</body>
+</html>
+"""
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("article_json")
+    ap.add_argument("--out", default=None, help="Output PDF path (default: same name as input, .pdf)")
+    args = ap.parse_args()
+
+    with open(args.article_json, encoding="utf-8") as f:
+        article = json.load(f)
+
+    out_pdf = args.out or os.path.splitext(args.article_json)[0] + ".pdf"
+    os.makedirs(os.path.dirname(out_pdf) or ".", exist_ok=True)
+
+    doc = render_html(article)
+
+    with tempfile.NamedTemporaryFile("w", suffix=".html", delete=False, encoding="utf-8") as f:
+        f.write(doc)
+        html_path = f.name
+
+    try:
+        result = subprocess.run(
+            [
+                "google-chrome", "--headless", "--disable-gpu", "--no-sandbox",
+                f"--print-to-pdf={out_pdf}",
+                "--no-pdf-header-footer",
+                "--run-all-compositor-stages-before-draw",
+                "--virtual-time-budget=10000",
+                f"file://{html_path}",
+            ],
+            capture_output=True, text=True, timeout=60,
+        )
+        if result.returncode != 0:
+            sys.exit(f"Chrome PDF render failed:\n{result.stderr}")
+    finally:
+        os.unlink(html_path)
+
+    print(f"Wrote {out_pdf}")
+
+
+if __name__ == "__main__":
+    main()
+@
